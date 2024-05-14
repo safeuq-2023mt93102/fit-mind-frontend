@@ -12,7 +12,7 @@ async function ActivityLog() {
     return (
       <>
         <LogActivity/>
-        <ActivityLogger/>
+        {/*<ActivityLogger/>*/}
       </>
     );
   }

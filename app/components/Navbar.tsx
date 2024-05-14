@@ -1,21 +1,21 @@
+'use client'
 import Logout from "@/app/components/Logout";
-import React from "react";
 
-import {Button, Modal, Input, Select, Flex, Typography} from 'antd';
-import {InputNumber, Table, Tag, Layout, Menu, theme} from 'antd';
-const {Header, Sider, Content} = Layout;
-const {Title} = Typography;
-const {Text} = Typography;
+import {InputNumber, Table, Tag, Layout, Menu, Typography, Flex, theme} from 'antd';
+import {getServerSession} from "next-auth";
+import {authOptions} from "@/app/api/auth/[...nextauth]/route";
 
-export default function Navbar({userName}) {
+
+export default function Navbar({username}) {
+
   return (
-    <Header>
+    <Layout.Header>
       <Flex style={{height: "100%"}} align={"center"}>
-        <Title level={4} style={{color: "white", margin: 0}}>Fitness Tracker</Title>
+        <Typography.Title level={4} style={{color: 'white', margin: 0}}>Fitness Tracker</Typography.Title>
         <div style={{flexGrow: 1}}></div>
-        <Text style={{color: "white", marginRight: "20px"}}>Welcome, {userName}</Text>
+        <Typography.Text style={{color: "white", marginRight: "20px"}}>Welcome, {username}</Typography.Text>
         <Logout/>
       </Flex>
-    </Header>
+    </Layout.Header>
   )
 }
