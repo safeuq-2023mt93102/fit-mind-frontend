@@ -7,7 +7,7 @@ export default function Login() {
     <>
       <Flex style={{display: "flex", height: "100%"}} align={"center"} justify={"space-evenly"} vertical>
         <Button type="primary" onClick={() => signIn("keycloak")}>
-          Sign-in with keycloak
+          Sign-in
         </Button>
       </Flex>
     </>

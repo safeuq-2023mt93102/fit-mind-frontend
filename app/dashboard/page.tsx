@@ -1,17 +1,12 @@
-import HomePage from "@/app/components/HomePage";
-import {getServerSession} from 'next-auth'
-import {SessionProvider} from "next-auth/react";
 import {redirect} from "next/navigation";
-import {authOptions} from "@/app/api/auth/[...nextauth]/route";
+import {auth} from "@/auth";
+import Dashboard from "@/app/components/Dashboard";
 
-async function Home() {
-  const session = await getServerSession(authOptions)
-  if (session) {
-    return (
-      <HomePage session={session}/>
-    );
+export default async function DashboardPage() {
+  const session = await auth()
+  if (!session) {
+    console.log("Session is present");
+    return redirect("/");
   }
-  redirect("/");
+  return (<Dashboard session={session}/>);
 }
-
-export default Home;

@@ -13,7 +13,7 @@ import {Link} from "react-router-dom";
 
 const Sidebar = () => {
   const menuItems = [
-    {key: 'logActivity', icon: <FormOutlined/>, label: <Link to={"/"}>Activity logging</Link>},
+    {key: 'logActivity', icon: <FormOutlined/>, label: <Link to={"/log"}>Activity logging</Link>},
     {key: '2', icon: <FieldTimeOutlined/>, label: <Link to={"/nutrition"}>Nutrition tracker</Link>},
     {key: '3', icon: <DesktopOutlined/>, label: <Link to={"/integration"}>Integrate devices</Link>},
     {key: '4', icon: <ShareAltOutlined/>, label: <Link to={"/share"}>Share progress</Link>},

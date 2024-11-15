@@ -6,6 +6,7 @@ import {Button, Modal, Input, Select, Flex, Typography} from 'antd';
 import {InputNumber, Table, Tag, Layout, Menu, theme} from 'antd';
 import {useSession, SessionProvider} from "next-auth/react";
 import {auth} from "@/auth";
+import {redirect} from "next/navigation";
 const {Header, Sider, Content} = Layout;
 const {Title} = Typography;
 const {Text} = Typography;
@@ -25,7 +26,14 @@ export default function Navbar() {
                 <Text style={{color: "white", marginRight: "20px"}}>Welcome, {session?.data?.user?.name}</Text>
                 <Logout/>
               </>)
-              : (<Login/>)
+              : (
+                <>
+                  <Button type="link" href={"/signup"}>
+                    Sign-up
+                  </Button>
+                <Login/>
+                </>
+              )
           }
         </Flex>
       </Header>

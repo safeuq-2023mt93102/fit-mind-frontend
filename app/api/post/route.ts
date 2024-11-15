@@ -9,12 +9,15 @@ export async function POST(forwardRequest: any) {
 
   console.log("Request body: ", requestBody);
   console.log("Request path: ", requestPath);
+  let headers: any = {
+    'Content-Type': 'application/json',
+  };
+  if (session) {
+    headers['Authorization'] = "Bearer " + session?.accessToken
+  }
   return fetch('http://localhost:8080' + requestPath, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': "Bearer " + session?.accessToken,
-    },
+    headers: headers,
     body: JSON.stringify(requestBody)
   });
 }
