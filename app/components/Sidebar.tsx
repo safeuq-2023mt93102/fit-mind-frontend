@@ -8,16 +8,16 @@ import {
   FormOutlined,
   ProductOutlined
 } from '@ant-design/icons';
-import Link from "next/link";
+import {Link} from "react-router-dom";
 
 
 const Sidebar = () => {
   const menuItems = [
-    {key: 'logActivity', icon: <FormOutlined/>, label: <Link href={"/"}>Activity logging</Link>},
-    {key: '2', icon: <FieldTimeOutlined/>, label: <Link href={"/nutrition"}>Nutrition tracker</Link>},
-    {key: '3', icon: <DesktopOutlined/>, label: <Link href={"/integration"}>Integrate devices</Link>},
-    {key: '4', icon: <ShareAltOutlined/>, label: <Link href={"/share"}>Share progress</Link>},
-    {key: '5', icon: <ProductOutlined/>, label: <Link href={"/workout"}>Workout Plan</Link>},
+    {key: 'logActivity', icon: <FormOutlined/>, label: <Link to={"/"}>Activity logging</Link>},
+    {key: '2', icon: <FieldTimeOutlined/>, label: <Link to={"/nutrition"}>Nutrition tracker</Link>},
+    {key: '3', icon: <DesktopOutlined/>, label: <Link to={"/integration"}>Integrate devices</Link>},
+    {key: '4', icon: <ShareAltOutlined/>, label: <Link to={"/share"}>Share progress</Link>},
+    {key: '5', icon: <ProductOutlined/>, label: <Link to={"/workout"}>Workout Plan</Link>},
   ];
   const {
     token: {colorBgContainer, borderRadiusLG},

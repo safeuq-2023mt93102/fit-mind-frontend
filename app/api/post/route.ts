@@ -1,9 +1,7 @@
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/app/api/auth/[...nextauth]/route";
-import {redirect} from 'next/navigation';
+import {auth} from "@/auth";
 
 export async function POST(forwardRequest: any) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   const request = await forwardRequest.json();
   const requestBody = request.payload

@@ -109,26 +109,6 @@ function LogActivity() {
     setData(mappedData)
   }
 
-  function listActivity() {
-    setTableLoading(true);
-    fetch("/api/get", {
-      method: "POST",
-      body: JSON.stringify({
-        path: '/activity/'
-      })
-    }).then((listActivity) => {
-      if (listActivity.status == 401) {
-        return signOut();
-      }
-      return listActivity.json().then(data => {
-        loadData(data);
-        setTableLoading(false);
-      });
-    })
-  }
-
-  useEffect(() => listActivity(), [])
-
   const handleOk = () => {
     setLoading(true);
     let data;
@@ -194,6 +174,26 @@ function LogActivity() {
   const itemStyle: CSSProperties = {
     // marginTop: "8px"
   }
+
+  function listActivity() {
+    setTableLoading(true);
+    fetch("/api/get", {
+      method: "POST",
+      body: JSON.stringify({
+        path: '/activity/'
+      })
+    }).then((listActivity) => {
+      if (listActivity.status == 401) {
+        return signOut();
+      }
+      return listActivity.json().then(data => {
+        loadData(data);
+        setTableLoading(false);
+      });
+    })
+  }
+
+  useEffect(() => listActivity(), [])
 
   return (
     <>

@@ -2,7 +2,6 @@
 import {signIn} from "next-auth/react";
 import {Button, Modal, Input, Select, Flex} from 'antd';
 
-
 export default function Login() {
   return (
     <>
