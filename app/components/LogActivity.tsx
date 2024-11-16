@@ -1,34 +1,18 @@
 "use client"
 import {CSSProperties, ReactNode, useEffect, useState} from 'react';
 import {Button, Modal, Input, Select, InputNumber, Table, Flex, Tag, Layout, Typography} from 'antd';
+import type { InputStatus } from 'antd/es/_util/statusUtils';
 import ExclamationCircleOutlined from '@ant-design/icons/ExclamationCircleOutlined';
 import type {TableProps} from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import {signOut} from "next-auth/react";
 import {redirect, useRouter} from "next/navigation";
+import {Activity, ActivityInput, ErrorResponse} from "@/interfaces/api/interfaces";
 
 const {Header, Content} = Layout;
 const {Text, Title} = Typography;
 
-interface Activity {
-  id: string,
-  type: string,
-  details: string,
-  key: number
-}
-
-interface ActivityInput {
-  walkingSteps: number,
-  cyclingDistance: number,
-  cyclingUnit: string
-}
-
-interface ErrorResponse {
-  type: string,
-  message: string,
-  metadata: any
-}
-
-const columns: TableProps<Activity>['columns'] = [
+const columns: ColumnsType<Activity> = [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -73,8 +57,8 @@ function LogActivity() {
   const handleChange = (value: string) => {
     setSelectedVale(value);
   };
-  const [walkingStepsState, setWalkingStepsState] = useState("");
-  const [dataDistanceState, setDataDistanceState] = useState("");
+  const [walkingStepsState, setWalkingStepsState] = useState<InputStatus>("");
+  const [dataDistanceState, setDataDistanceState] = useState<InputStatus>("");
   const [activityLog, setActivityLog] = useState<ActivityInput>({
     walkingSteps: 0,
     cyclingDistance: 0,

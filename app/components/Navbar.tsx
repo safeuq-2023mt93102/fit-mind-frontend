@@ -16,7 +16,7 @@ export default function Navbar() {
 
   return (
     <SessionProvider>
-      <Header>
+      <Header style={{padding: "0 20px 0 20px", position: "sticky", top: 0, zIndex: 1}}>
         <Flex style={{height: "100%"}} align={"center"}>
           <Title level={4} style={{color: "white", margin: 0}}>Fitness Tracker</Title>
           <div style={{flexGrow: 1}}></div>
@@ -28,7 +28,7 @@ export default function Navbar() {
               </>)
               : (
                 <>
-                  <Button type="link" href={"/signup"}>
+                  <Button type="link" href={"/auth/signup"}>
                     Sign-up
                   </Button>
                 <Login/>
