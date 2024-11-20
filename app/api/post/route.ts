@@ -18,9 +18,10 @@ export async function POST(forwardRequest: NextRequest) {
   if (session) {
     headers['Authorization'] = "Bearer " + session?.accessToken
   }
-  return fetch('http://localhost:8080' + requestPath, {
+  return fetch('http://localhost:8081' + requestPath, {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(requestBody)
+    //
   });
 }
