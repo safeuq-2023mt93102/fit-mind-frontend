@@ -108,6 +108,7 @@ const WorkoutPlans = () => {
       render: (completed: boolean, record: Goal) => (
         <Checkbox
           checked={completed}
+          disabled={completed}
           onChange={() => handleCheckboxChange(record)}
         />
       ),
