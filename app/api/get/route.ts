@@ -11,9 +11,6 @@ export async function POST(forwardRequest: NextRequest) {
   const requestPath = request.path;
 
   console.log("Request path: ", requestPath);
-<<<<<<< HEAD
-  return fetch('http://localhost:8081' + requestPath, {
-=======
   let headers: any = {
     'Content-Type': 'application/json',
   };
@@ -21,7 +18,6 @@ export async function POST(forwardRequest: NextRequest) {
     headers['Authorization'] = "Bearer " + session?.accessToken
   }
   return fetch(getBaseUrl(request.server) + requestPath, {
->>>>>>> aa70da65012a0250ac7cb01cace2e4dadf942e7b
     method: 'GET',
     headers: headers
   });
