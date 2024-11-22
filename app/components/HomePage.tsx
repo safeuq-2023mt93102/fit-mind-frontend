@@ -54,7 +54,7 @@ export default function HomePage({session}:{session: Session | null}) {
             <div style={{flexGrow: 1}}></div>
           </Flex>
         </Layout.Content>
-      </Layout>
+      </Layout>x
     </SessionProvider>
   );
 }

@@ -3,8 +3,9 @@
 import React, {useEffect, useState} from 'react';
 import { Form, Input, Button, DatePicker, Layout, Typography, Flex, App } from 'antd';
 import {useRouter} from "next/navigation";
-import {ErrorResponse} from "@/interfaces/api/interfaces";
+import {ErrorResponse, PostRequest, Servers} from "@/interfaces/api/interfaces";
 import {signIn} from "next-auth/react";
+import { callPost } from "@/util/util";
 
 const {Title} = Typography;
 const {Header, Sider, Content} = Layout;
@@ -22,20 +23,18 @@ function SignupComponent() {
     console.log('Received values from form: ', values);
     const formattedDate = values.dateOfBirth.format("DD-MM-YYYY");
     // Here you would typically send a request to your backend to create a user
-    fetch("/api/post", {
-      method: "POST",
-      body: JSON.stringify({
-        path: '/auth/signup',
-        payload: {
-          "password": values.password,
-          "user": {
-            "first_name": values.firstName,
-            "last_name": values.lastName,
-            "email": values.email,
-            "date_of_birth": formattedDate
-          }
+    callPost({
+      server: Servers.USERS,
+      path: '/auth/signup',
+      payload: {
+        "password": values.password,
+        "user": {
+          "first_name": values.firstName,
+          "last_name": values.lastName,
+          "email": values.email,
+          "date_of_birth": formattedDate
         }
-      })
+      }
     }).then((response) => {
       setLoading(false)
       console.log("Status: ", response.status);

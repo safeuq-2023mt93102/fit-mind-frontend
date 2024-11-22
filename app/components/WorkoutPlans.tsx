@@ -12,7 +12,7 @@ const WorkoutPlans = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectValue, setSelectValue] = useState("BEGINNER");
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  // const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [tableLoading, setTableLoading] = useState(true);
 
@@ -133,7 +133,7 @@ const WorkoutPlans = () => {
           setIsModalOpen(false);
           response.json().then((data: { workouts: Workout[] }) => {
             const workoutsList: Workout[] = data.workouts;
-            setWorkouts(workoutsList);
+            // setWorkouts(workoutsList);
             const goalIds = workoutsList.flatMap(workout => workout.goals);
             fetchGoals(goalIds)
           });

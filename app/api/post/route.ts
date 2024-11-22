@@ -1,7 +1,8 @@
 import {auth} from "@/auth";
 import {ISession} from "@/interfaces/auth/interface";
 import {NextRequest} from "next/server";
-import {PostRequest} from "@/interfaces/api/interfaces";
+import {PostRequest, Servers} from "@/interfaces/api/interfaces";
+import {getBaseUrl} from "@/util/util";
 
 export async function POST(forwardRequest: NextRequest) {
   const session = await auth() as ISession
@@ -18,7 +19,7 @@ export async function POST(forwardRequest: NextRequest) {
   if (session) {
     headers['Authorization'] = "Bearer " + session?.accessToken
   }
-  return fetch('http://localhost:8081' + requestPath, {
+  return fetch(getBaseUrl(request.server) + requestPath, {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(requestBody)
