@@ -1,15 +1,38 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import ProgressPreview from "@/app/components/ProgressPreview";
 import SocialSharing from "@/app/components/SocialSharing";
+import { callGet } from "@/util/util";
+import { Servers } from "@/interfaces/api/interfaces";
 
 function SharePage() {
-  const progressData = {
-        steps: 12000,
-    caloriesBurned: 500,
-    distance: 8.5, // in kilometers
+  const [progressData, setProgressData] = useState({
+    steps: 0,
+    caloriesBurned: 0,
+    distance: 0,
     goalsAchieved: ["Walk 10k steps", "Burn 400 calories"],
-  };
+  });
+
+  useEffect(() => {
+    callGet({
+      server: Servers.CORE,
+      path: '/activity/'
+    }).then(async (response) => {
+      const data = await response.json();
+      const sum = data
+        .filter((v: any) => v.data.type === "WALKING")
+        .map((x: any) => x.data.steps)
+        .reduce((a: any, b: any) => a + b, 0);
+
+      setProgressData({
+        steps: sum,
+        caloriesBurned: sum * 0.04,
+        distance: Math.round(sum / 1400),
+        goalsAchieved: ["Walk 10k steps", "Burn 400 calories"]
+      });
+    });
+  }, []);
 
   const shareMessage = `
     🏋️ Fitness Progress:
@@ -23,13 +46,11 @@ function SharePage() {
     <>
       <h1>Share Your Progress</h1>
       
-      {/* Progress Preview Component */}
       <section>
         <h2>Progress Preview</h2>
-        <ProgressPreview />
+        <ProgressPreview progressData={progressData} />
       </section>
 
-      {/* Social Sharing Component */}
       <section>
         <h2>Share Now</h2>
         <SocialSharing shareMessage={shareMessage} />
