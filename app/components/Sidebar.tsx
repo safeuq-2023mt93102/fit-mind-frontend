@@ -12,18 +12,18 @@ import {
 import Link from "next/link";
 
 
-const Sidebar = () => {
+export default function Sidebar() {
   const menuItems = [
-    {key: 'logActivity', icon: <FormOutlined/>, label: <Link href={"/dashboard/activity_logging"}>Activity logging</Link>},
-    {key: '2', icon: <FieldTimeOutlined/>, label: <Link href={"/dashboard/nutrition"}>Nutrition tracker</Link>},
-    {key: '3', icon: <DesktopOutlined/>, label: <Link href={"/dashboard/integration"}>Integrate devices</Link>},
-    {key: '4', icon: <ShareAltOutlined/>, label: <Link href={"/dashboard/share"}>Share progress</Link>},
-    {key: '5', icon: <ProductOutlined/>, label: <Link href={"/dashboard/workout"}>Workout Plan</Link>},
+    {key: 'activity_logging', icon: <FormOutlined/>, label: <Link href={"/dashboard/activity_logging"}>Activity logging</Link>},
+    {key: 'nutrition', icon: <FieldTimeOutlined/>, label: <Link href={"/dashboard/nutrition"}>Nutrition tracker</Link>},
+    {key: 'integration', icon: <DesktopOutlined/>, label: <Link href={"/dashboard/integration"}>Integrate devices</Link>},
+    {key: 'share', icon: <ShareAltOutlined/>, label: <Link href={"/dashboard/share"}>Share progress</Link>},
+    {key: 'workout', icon: <ProductOutlined/>, label: <Link href={"/dashboard/workout"}>Workout Plan</Link>},
   ];
   const {
     token: {colorBgContainer, borderRadiusLG},
   } = theme.useToken();
-  const [openMenu, setOpenMenu] = useState<string>(menuItems[0].key);
+  const [openMenu] = useState<string>(menuItems[0].key);
   return (
     <Layout.Sider width={200} style={{background: colorBgContainer}}>
       <Menu
@@ -35,4 +35,3 @@ const Sidebar = () => {
     </Layout.Sider>
   )
 }
-export default Sidebar;
