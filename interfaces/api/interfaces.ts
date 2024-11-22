@@ -14,20 +14,6 @@ export interface PostRequest extends Request {
   payload: any
 }
 
-export interface Activity {
-  id: string,
-  created: string,
-  type: ActivityType,
-  details: string,
-  key: number
-}
-
-export interface ActivityInput {
-  walkingSteps: number,
-  cyclingDistance: number,
-  cyclingUnit: string
-}
-
 export interface ErrorResponse {
   type: string,
   message: string,
