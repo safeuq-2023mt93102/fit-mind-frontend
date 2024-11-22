@@ -22,6 +22,5 @@ export async function POST(forwardRequest: NextRequest) {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(requestBody)
-    //
   });
 }
