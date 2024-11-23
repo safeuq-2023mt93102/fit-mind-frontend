@@ -1,86 +1,64 @@
 "use client"
 import {CSSProperties, useEffect, useState} from 'react';
-import {Button, Flex, InputNumber, Layout, Modal, Select, Table, Tag, Typography, message} from 'antd';
+import {Button, Flex, InputNumber, Layout, Modal, Select, Table, Tag, Typography} from 'antd';
 import type {InputStatus} from 'antd/es/_util/statusUtils';
 import ExclamationCircleOutlined from '@ant-design/icons/ExclamationCircleOutlined';
 import type {ColumnsType} from 'antd/es/table';
-import {useRouter} from "next/navigation";
 import {
-  Activity,
   ActivityApi,
-  ActivityInput,
   ActivityType,
   CyclingActivity,
   ErrorResponse,
   Servers,
   WalkingActivity
 } from "@/interfaces/api/interfaces";
-import {callGet, callPost} from "@/util/util";
+import {callGet, callPost, toProgressData} from "@/util/util";
 import dayjs from 'dayjs';
-import { ShareAltOutlined } from '@ant-design/icons';
+import {ShareAltOutlined} from '@ant-design/icons';
+import SocialSharing from "@/app/components/SocialSharing";
+import ProgressPreview from "@/app/components/ProgressPreview";
+import {Activity, ActivityInput, ProgressData} from "@/interfaces/app/interface";
 
 const {Header, Content} = Layout;
 const {Text, Title} = Typography;
 
-const columns: ColumnsType<Activity> = [
-  {
-    title: 'Created',
-    dataIndex: 'created',
-    key: 'created',
-    width: 'fit-content',
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-    key: 'type',
-    render: (_, {type}) => {
-      let color = 'gray';
-      switch (type) {
-        case ActivityType.WALKING:
-          color = 'purple';
-          break;
-        case ActivityType.CYCLING:
-          color = 'magenta';
-          break;
-      }
-      return (
-        <Tag color={color} key={type}>
-          {type.toString().toUpperCase()}
-        </Tag>
-      );
-    }
-  },
-  {
-    title: 'Details',
-    dataIndex: 'details',
-    key: 'details',
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    width: 'fit-content',
-    render: (_, record) => (
-      <Button 
-        type="text" 
-        icon={<ShareAltOutlined />}
-        onClick={() => {
-          const text = `${record.type} activity - ${record.details} (${record.created})`;
-          navigator.clipboard.writeText(text).then(() => {
-            message.success('Activity details copied to clipboard');
-          });
-        }}
-      />
-    ),
-  },
-];
+function ShareModal(
+  { isOpen, onClose, activity }
+    : { isOpen: boolean, onClose: () => void, activity: Activity }) {
+  let progressData: ProgressData | undefined = activity &&
+    toProgressData(activity.apiData);
+
+  let shareMessage: string | undefined = progressData && `
+      🏋️Fitness Progress:
+      - Steps: ${progressData.steps}
+      - Calories Burned: ${progressData.caloriesBurned}
+      - Distance: ${progressData.distance} km
+      - Goals Achieved: ${progressData.goalsAchieved.join(", ")}
+    `;
+  return (
+    <Modal 
+      title={null}
+      open={isOpen} 
+      onCancel={onClose}
+      footer={null}>
+      <Flex justify="center" gap="middle" vertical>
+        <ProgressPreview progressData={progressData as ProgressData}/>
+        <Flex>
+          <SocialSharing progressData={progressData as ProgressData}/>
+        </Flex>
+      </Flex>
+    </Modal>
+  );
+}
+
 
 function LogActivityModal(
   {isModalOpen, setIsModalOpen, listActivity}
     : { isModalOpen: boolean, setIsModalOpen: (state: boolean) => void, listActivity: () => void }) {
   const [loading, setLoading] = useState(false);
 
-  const [selectValue, setSelectedVale] = useState("WALKING");
-  const handleChange = (value: string) => {
+  const [selectValue, setSelectedVale] = useState<ActivityType>(ActivityType.WALKING);
+  const handleChange = (value: ActivityType) => {
     setSelectedVale(value);
   };
   const [walkingStepsState, setWalkingStepsState] = useState<InputStatus>("");
@@ -93,17 +71,19 @@ function LogActivityModal(
 
   const handleOk = () => {
     setLoading(true);
-    let data;
+    let data: any = {
+      type: selectValue,
+    };
     switch (selectValue) {
       case "WALKING":
         data = {
-          type: selectValue,
+          ...data,
           steps: activityLog.walkingSteps,
         };
         break;
       case "CYCLING":
         data = {
-          type: selectValue,
+          ...data,
           distance: activityLog.cyclingDistance,
           unit: activityLog.cyclingUnit
         };
@@ -153,7 +133,7 @@ function LogActivityModal(
   }
 
   let walkingBlock = <>{
-    selectValue === "WALKING" && (
+    selectValue === ActivityType.WALKING && (
       <>
         <label>Steps</label>
         <InputNumber
@@ -174,7 +154,7 @@ function LogActivityModal(
   }</>;
 
   let cyclingBlock = <>{
-    selectValue === "CYCLING" && (
+    selectValue === ActivityType.CYCLING && (
       <>
         <label
           style={{...itemStyle}}>Distance</label>
@@ -227,15 +207,15 @@ function LogActivityModal(
       {/* align={"flex-start"} justify={"space-evenly"}*/}
       <Flex gap={"small"} vertical>
         <Select
-          defaultValue="WALKING"
+          defaultValue={ActivityType.WALKING}
           style={{...itemStyle}}
           onChange={handleChange}
           options={[
-            {value: 'WALKING', label: 'Walking'},
-            {value: 'CYCLING', label: 'Cycling'},
-            {value: 'CALORIES_BURNED', label: 'Calories burned'},
-            {value: 'SLEEP', label: 'Sleep'},
-            {value: 'HEART_RATE', label: 'Heart rate'},
+            {value: ActivityType.WALKING, label: 'Walking'},
+            {value: ActivityType.CYCLING, label: 'Cycling'},
+            {value: ActivityType.CALORIES_BURNED, label: 'Calories burned'},
+            {value: ActivityType.SLEEP, label: 'Sleep'},
+            {value: ActivityType.HEART_RATE, label: 'Heart rate'},
           ]}
           value={selectValue}
         />
@@ -248,7 +228,63 @@ function LogActivityModal(
 }
 
 function LogActivity() {
-  const router = useRouter();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [record, setRecord] = useState<Activity>();
+
+  const columns: ColumnsType<Activity> = [
+    {
+      title: 'Created',
+      dataIndex: 'created',
+      key: 'created',
+      width: 'fit-content',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      render: (_, {type}) => {
+        let color = 'gray';
+        switch (type) {
+          case ActivityType.WALKING:
+            color = 'purple';
+            break;
+          case ActivityType.CYCLING:
+            color = 'magenta';
+            break;
+        }
+        return (
+          <Tag color={color} key={type}>
+            {type.toString().toUpperCase()}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: 'Details',
+      dataIndex: 'message',
+      key: 'message',
+    },
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      width: 'fit-content',
+      render: (_, record) => {
+        return (
+          <>
+            <Button
+              type="text"
+              icon={<ShareAltOutlined />}
+              onClick={() => {
+                setRecord(record)
+                setIsShareModalOpen(true)
+              }}/>
+          </>
+        );
+      },
+    },
+  ];
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [tableLoading, setTableLoading] = useState(true);
@@ -260,17 +296,17 @@ function LogActivity() {
 
   function loadData(response: ActivityApi[]) {
     let mappedData: Activity[] = []
-    let i = 1;
+    let index = 1;
     response = response.slice(0, 20)
-    response.forEach((activity) => {
-      let info = "";
+    response.forEach((activity: ActivityApi) => {
+      let message = "";
       switch (activity.data.type) {
         case ActivityType.WALKING:
-          info = `Steps: ${(activity.data as WalkingActivity).steps}`;
+          message = `Steps: ${(activity.data as WalkingActivity).steps}`;
           break;
         case ActivityType.CYCLING:
           let cycling = activity.data as CyclingActivity;
-          info = `Distance: ${cycling.distance} ${cycling.unit.toString().toLowerCase()}`;
+          message = `Distance: ${cycling.distance} ${cycling.unit.toString().toLowerCase()}`;
           break;
       }
 
@@ -290,11 +326,12 @@ function LogActivity() {
       const timeText = activityDate.format('hh:mm:ss A');
       
       mappedData.push({
-        key: i++,
+        key: index++,
         id: activity.id,
         created: `${dateText}, ${timeText}`,
         type: activity.data.type,
-        details: info,
+        message: message,
+        apiData: activity
       })
     })
     setData(mappedData)
@@ -328,6 +365,11 @@ function LogActivity() {
         <div style={{flexGrow: 1}}/>
       </Flex>
       <LogActivityModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} listActivity={listActivity}/>
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        activity={record as Activity}
+      />
     </>
   )
 }

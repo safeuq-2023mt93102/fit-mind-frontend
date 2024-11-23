@@ -1,65 +1,98 @@
 "use client";
+import { Card, Statistic, List, Typography, Flex } from 'antd';
+import { GiBootPrints } from "react-icons/gi";
+import { StepForwardOutlined, FireOutlined, CompassOutlined, TrophyOutlined } from '@ant-design/icons';
+import { useEffect, useState, useRef } from 'react';
 
-import { useState } from "react";
+const { Title, Text } = Typography;
 
-interface ProgressPreviewProps {
-    progressData: {
-        steps: number;
-        caloriesBurned: number;
-        distance: number;
-        goalsAchieved: string[];
-    };
+interface ProgressData {
+  steps: number;
+  caloriesBurned: number;
+  distance: number;
+  goalsAchieved: string[];
 }
 
-  const ProgressPreview: React.FC = () => {
+interface ProgressPreviewProps {
+  progressData: ProgressData;
+}
 
-const [progressData, setProgressData] = useState({
-    steps: 12000,
-    caloriesBurned: 500,
-    distance: 8.5, // in kilometers
-    goalsAchieved: ["Walk 10k steps", "Burn 400 calories"],
-  });
+export default function ProgressPreview({ progressData }: ProgressPreviewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [gap, setGap] = useState(64);
 
-  fetch("/api/get", {
-    method: "POST",
-    body: JSON.stringify({
-      path: '/activity/',
-    })
-  }).then((listActivity) => {
+  useEffect(() => {
+    const updateGap = () => {
+      if (containerRef.current) {
+        const statisticElements = containerRef.current.getElementsByClassName('ant-statistic');
+        let totalWidth = 0;
+        
+        Array.from(statisticElements).forEach(element => {
+          totalWidth += element.clientWidth;
+        });
 
-    listActivity.json().then((data) => {
-      const sum = data
-      .filter((v:any) => v.data.type === "WALKING")
-      .map((x:any) => x.data.steps)
-    .reduce((a:any, b:any) => a + b, 0);
-    setProgressData(prev => ({
-      ...prev,
-      steps: sum ,
-      caloriesBurned:sum*0.04,
-      distance:Math.round(sum/1400),
-      goalsAchieved: ["Walk 10k steps", "Burn 400 calories"]
-    }));
-  });
-  
-});
+        const containerWidth = containerRef.current.offsetWidth;
+        const calculatedGap = Math.max(16, Math.min(64, 
+          Math.floor(64 - (totalWidth / containerWidth) * 48)
+        ));
 
-    return (
-      <div style={{ border: "1px solid #ccc", padding: "16px", borderRadius: "8px" }}>
-        <h3>Your Fitness Progress</h3>
-        <p><strong>Steps:</strong> {progressData.steps}</p>
-        <p><strong>Calories Burned:</strong> {progressData.caloriesBurned}</p>
-        <p><strong>Distance:</strong> {progressData.distance} km</p>
-        <p>
-          <strong>Goals Achieved:</strong>
-          <ul>
-            {progressData.goalsAchieved.map((goal, index) => (
-              <li key={index}>{goal}</li>
-            ))}
-          </ul>
-        </p>
-      </div>
-    );
-  };
-  
-  export default ProgressPreview;
+        setGap(calculatedGap);
+      }
+    };
+
+    // Initial calculation
+    updateGap();
+
+    // Create ResizeObserver to watch the statistics
+    const resizeObserver = new ResizeObserver(updateGap);
+    
+    // Observe each statistic element
+    if (containerRef.current) {
+      const statisticElements = containerRef.current.getElementsByClassName('ant-statistic');
+      Array.from(statisticElements).forEach(element => {
+        resizeObserver.observe(element);
+      });
+    }
+
+    return () => resizeObserver.disconnect();
+  }, [progressData]); // Re-run when progressData changes
+
+  return (
+    <>
+      <Flex vertical={true} gap={"middle"} ref={containerRef}>
+        <Text strong style={{fontSize: "16px"}}>Your Fitness Progress</Text>
+        <Flex gap={gap} wrap="wrap">
+          <Statistic
+            title="Steps"
+            value={progressData.steps}
+            prefix={<GiBootPrints />}
+          />
+          <Statistic
+            title="Calories Burned"
+            value={progressData.caloriesBurned.toFixed(1)}
+            prefix={<FireOutlined />}
+            suffix="kcal"
+          />
+          <Statistic
+            title="Distance"
+            value={progressData.distance}
+            prefix={<CompassOutlined />}
+            suffix="km"
+          />
+        </Flex>
+          <Text><TrophyOutlined /> Goals Achieved</Text>
+          <List
+            bordered
+            size={"small"}
+            dataSource={progressData.goalsAchieved}
+            renderItem={(goal) => (
+              <List.Item>
+                {goal}
+              </List.Item>
+            )}
+          />
+      </Flex>
+    </>
+  );
+}
   

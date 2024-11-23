@@ -11,17 +11,19 @@ export async function POST(forwardRequest: NextRequest) {
   const requestBody = request.payload
   const requestPath = request.path;
 
-  console.log("Request body: ", requestBody);
-  console.log("Request path: ", requestPath);
   let headers: any = {
     'Content-Type': 'application/json',
   };
   if (session) {
     headers['Authorization'] = "Bearer " + session?.accessToken
   }
-  return fetch(getBaseUrl(request.server) + requestPath, {
+  let fullUrl = getBaseUrl(request.server) + requestPath;
+  return fetch(fullUrl, {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(requestBody)
+  }).then((response) => {
+    console.log("External: POST ", fullUrl, response.status)
+    return response
   });
 }

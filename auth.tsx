@@ -52,5 +52,7 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
         await fetch(logOutUrl);
       }
     }
-  }
+  },
+  trustHost: true,
+  secret: "g3WR+4ergmfZ9WQ4MttrWCCEvhm5iS4aTEWNMIdhz1I="
 })
