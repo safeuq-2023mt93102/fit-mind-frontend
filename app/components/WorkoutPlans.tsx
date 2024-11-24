@@ -120,7 +120,7 @@ const WorkoutPlans = () => {
 
     callPost({
       server: Servers.CORE,
-      path: '/plan',
+      path: '/plan/',
       payload: {
         level: selectValue,
         target: "GAIN_WEIGHT",
