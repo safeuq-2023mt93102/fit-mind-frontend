@@ -1,6 +1,6 @@
 "use client";
 import { CSSProperties, useState, useEffect } from 'react';
-import { Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge } from 'antd';
+import { Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge, theme } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useRouter } from 'next/navigation';
 import { useSession , signOut } from 'next-auth/react';
@@ -12,6 +12,7 @@ const WorkoutPlans = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [plansLoading, setPlansLoading] = useState(true);
   const [selectLevel, setSelectLevel] = useState("BEGINNER");
   const [selectTarget, setSelectTarget] = useState("GAIN_WEIGHT");
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -127,6 +128,7 @@ const WorkoutPlans = () => {
       }
       const plans = await response.json();
       setWorkoutPlans(plans);
+      setPlansLoading(false);
     });
   };
 
@@ -246,15 +248,17 @@ const WorkoutPlans = () => {
     marginBottom: 16,
   };
 
+  const { token: {colorBgLayout} } = theme.useToken();
+
   return (
-    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+    <Space direction="vertical" size="large" style={{ width: "100%", padding: "20px", backgroundColor: colorBgLayout}}>
       <Card title="Create Workout Plan" bordered>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
           Create Workout Plan
         </Button>
       </Card>
 
-      <Card title="Workout Plans" bordered>
+      <Card title="Workout Plans" bordered loading={plansLoading}>
         {workoutPlans.length === 0 ? (
           <Typography.Text>No workout plans available.</Typography.Text>
         ) : (
@@ -308,7 +312,7 @@ const WorkoutPlans = () => {
           </Button>,
         ]}
       >
-        <Space direction="vertical" size="small" style={{ width: "100%" }}>
+        <Space direction="vertical" size="small" style={{ width: "100%", height: "100%" }}>
           <Select
             defaultValue="BEGINNER"
             style={{ ...itemStyle }}

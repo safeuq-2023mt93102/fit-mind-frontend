@@ -1,11 +1,6 @@
+"use server";
 import NutritionTracker from "@/app/components/NutritionTracker";
 
-function Page() {
-  return (
-    <>
-      <NutritionTracker/>
-    </>
-  );
+export default async function Page() {
+  return <NutritionTracker/>;
 }
-
-export default Page;

@@ -1,11 +1,24 @@
-import {redirect} from "next/navigation";
-import {auth} from "@/auth";
+"use client";
+import {Spin} from 'antd';
+import {useRouter} from "next/navigation";
+import {useEffect} from "react";
 
-export default async function DashboardPage() {
-  const session = await auth()
-  if (!session) {
-    console.log("Session is present");
-    return redirect("/");
-  }
-  redirect("/dashboard/activity_logging");
+export default function DashboardPage() {
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/dashboard/activity_logging");
+  }, [router]);
+  return (
+    <Spin
+      spinning={true}
+      tip="Loading"
+      size={"large"}
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"}}>
+    </Spin>
+  )
 }
