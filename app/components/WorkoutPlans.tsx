@@ -1,11 +1,44 @@
 "use client";
-import { CSSProperties, useState, useEffect } from 'react';
-import { Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge, theme } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { useRouter } from 'next/navigation';
-import { useSession , signOut } from 'next-auth/react';
-import { Workout, Goal, Servers } from '@/interfaces/api/interfaces';
-import { callGet, callPost } from '@/util/util';
+import {CSSProperties, useState, useEffect} from 'react';
+import {Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge, Radio, theme} from 'antd';
+import type {ColumnsType} from 'antd/es/table';
+import {useRouter} from 'next/navigation';
+import {useSession, signOut} from 'next-auth/react';
+import {Workout, Goal, Servers} from '@/interfaces/api/interfaces';
+import {callGet, callPost} from '@/util/util';
+
+const LevelNameMap = {
+  BEGINNER: "Beginner",
+  ADVANCED: "Advanced",
+}
+
+const ExerciseColorMap = {
+  BARBELL_SQUATS: 'purple',
+  CARDIO: 'purple',
+  INCLINE_BENCH_PRESS: 'purple',
+  BENCH_PRESS: 'magenta',
+  BODY_WEIGHT_SQUATS: 'magenta',
+  PULL_UPS: 'green',
+  PUSH_UPS: 'green',
+  OVERHEAD_PRESS: 'blue',
+  PLANK: 'blue',
+  DEADLIFTS: 'red',
+  INTERVAL_TRAINING: 'red',
+  BARBELL_ROWS: 'cyan',
+  JUMPING_JACKS: 'cyan',
+  DUMBBELL_LUNGES: 'yellow',
+  MOUNTAIN_CLIMBERS: 'yellow',
+  DUMBBELL_SHOULDER_PRESS: 'lightcoral',
+  RUSSIAN_TWISTS: 'lightcoral',
+  LEG_PRESS: 'indigo',
+  BURPEES: 'indigo',
+  INCLINE_DUMBBELL_BENCH_PRESS: 'olive',
+  BACK_SQUATS: 'olive',
+  LAT_PULL_DOWNS: 'darkslategrey',
+  FRONT_SQUATS: 'darkslategrey',
+  TRICEP_DIPS: 'brown',
+  ROMANIAN_DEADLIFTS: 'brown',
+};
 
 const WorkoutPlans = () => {
   const router = useRouter();
@@ -19,14 +52,14 @@ const WorkoutPlans = () => {
   const [selectedGoals, setSelectedGoals] = useState<any[]>([]);
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
   const [tableLoading, setTableLoading] = useState(true);
-  const { data: session } = useSession();
+  const {data: session} = useSession();
 
   useEffect(() => {
     if (session) {
       fetchWorkoutPlans();
     }
   }, []);
-  
+
 
   const columns: ColumnsType<Goal> = [
     {
@@ -53,35 +86,8 @@ const WorkoutPlans = () => {
       key: 'exercise',
       align: 'center',
       render: (exercise: string) => {
-        const colorMap: Record<string, string> = {
-          BARBELL_SQUATS: 'purple',
-          CARDIO: 'purple',
-          INCLINE_BENCH_PRESS: 'purple',
-          BENCH_PRESS: 'magenta',
-          BODY_WEIGHT_SQUATS: 'magenta',
-          PULL_UPS: 'green',
-          PUSH_UPS: 'green',
-          OVERHEAD_PRESS: 'blue',
-          PLANK: 'blue',
-          DEADLIFTS: 'red',
-          INTERVAL_TRAINING: 'red',
-          BARBELL_ROWS: 'cyan',
-          JUMPING_JACKS: 'cyan',
-          DUMBBELL_LUNGES: 'yellow',
-          MOUNTAIN_CLIMBERS: 'yellow',
-          DUMBBELL_SHOULDER_PRESS: 'lightcoral',
-          RUSSIAN_TWISTS: 'lightcoral',
-          LEG_PRESS: 'indigo',
-          BURPEES: 'indigo',
-          INCLINE_DUMBBELL_BENCH_PRESS: 'olive',
-          BACK_SQUATS: 'olive',
-          LAT_PULL_DOWNS: 'darkslategrey',
-          FRONT_SQUATS: 'darkslategrey',
-          TRICEP_DIPS: 'brown',
-          ROMANIAN_DEADLIFTS: 'brown',
-        };
         return (
-          <Tag color={colorMap[exercise] || 'gray'}>{exercise.toUpperCase()}</Tag>
+          <Tag color={ExerciseColorMap[exercise] || 'gray'}>{exercise && exercise.toUpperCase()}</Tag>
         );
       },
     },
@@ -127,6 +133,7 @@ const WorkoutPlans = () => {
         return signOut();
       }
       const plans = await response.json();
+      console.log(plans)
       setWorkoutPlans(plans);
       setPlansLoading(false);
     });
@@ -179,7 +186,7 @@ const WorkoutPlans = () => {
     const updatedCompleted: boolean = !goal.completed;
 
     const updatedGoals = goals.map((item) =>
-      item.id === goal.id ? { ...item, completed: updatedCompleted } : item
+      item.id === goal.id ? {...item, completed: updatedCompleted} : item
     );
     setGoals(updatedGoals);
 
@@ -248,44 +255,47 @@ const WorkoutPlans = () => {
     marginBottom: 16,
   };
 
-  const { token: {colorBgLayout} } = theme.useToken();
+  const {token: {colorBgLayout, colorBgContainer}} = theme.useToken();
 
+  let createButton = (
+    <Button type="primary" onClick={() => setIsModalOpen(true)}>
+      Create Workout Plan
+    </Button>
+  );
+
+  // <Typography.Text>No workout plans available.</Typography.Text>
   return (
-    <Space direction="vertical" size="large" style={{ width: "100%", padding: "20px", backgroundColor: colorBgLayout}}>
-      <Card title="Create Workout Plan" bordered>
-        <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Create Workout Plan
-        </Button>
-      </Card>
+    <Space direction="vertical" size="large" style={{width: "100%", padding: "20px", backgroundColor: colorBgLayout}}>
+      <Radio.Group>
+        <List
+          bordered
+          dataSource={workoutPlans}
+          loading={plansLoading}
+          style={{backgroundColor: colorBgContainer}}
+          header={<Typography.Text strong style={{fontSize: "16px"}}>Workout Plans</Typography.Text>}
+          footer={createButton}
+          renderItem={(plan) => (
 
-      <Card title="Workout Plans" bordered loading={plansLoading}>
-        {workoutPlans.length === 0 ? (
-          <Typography.Text>No workout plans available.</Typography.Text>
-        ) : (
-          <List
-            bordered
-            dataSource={workoutPlans}
-            renderItem={(plan) => (
+            <Badge.Ribbon
+              color={
+                plan.level === "BEGINNER"
+                  ? "green"
+                  : plan.level === "INTERMEDIATE"
+                    ? "orange"
+                    : "red"
+              }
+              text={LevelNameMap[plan.level]}>
               <List.Item
                 onClick={() => fetchGoalsForWorkoutPlan(plan.id)}
-                style={{ cursor: "pointer" }}
-              >
-                <Typography.Text strong>{plan.name}</Typography.Text>{" "}
-                <Badge
-                  color={
-                    plan.level === "BEGINNER"
-                      ? "green"
-                      : plan.level === "INTERMEDIATE"
-                      ? "orange"
-                      : "red"
-                  }
-                  text={plan.level}
-                />
+                style={{cursor: "pointer"}}>
+                <Radio value={plan.id} style={{marginRight: "56px"}}>
+                  <Typography.Text>{plan.name}</Typography.Text>
+                </Radio>
               </List.Item>
-            )}
-          />
-        )}
-      </Card>
+            </Badge.Ribbon>
+          )}
+        />
+      </Radio.Group>
 
       {selectedGoals.length > 0 && (
         <Card title="Workout Goals" bordered>
@@ -312,23 +322,23 @@ const WorkoutPlans = () => {
           </Button>,
         ]}
       >
-        <Space direction="vertical" size="small" style={{ width: "100%", height: "100%" }}>
+        <Space direction="vertical" size="small" style={{width: "100%", height: "100%"}}>
           <Select
             defaultValue="BEGINNER"
-            style={{ ...itemStyle }}
+            style={{...itemStyle}}
             onChange={handleLevelChange}
             options={[
-              { value: "BEGINNER", label: "Beginner" },
-              { value: "ADVANCED", label: "Advanced" },
+              {value: "BEGINNER", label: LevelNameMap.BEGINNER},
+              {value: "ADVANCED", label: LevelNameMap.ADVANCED},
             ]}
           />
           <Select
             defaultValue="GAIN_WEIGHT"
-            style={{ ...itemStyle }}
+            style={{...itemStyle}}
             onChange={handleTargetChange}
             options={[
-              { value: "GAIN_WEIGHT", label: "Gain Weight" },
-              { value: "LOSE_WEIGHT", label: "Lose Weight" },
+              {value: "GAIN_WEIGHT", label: "Gain Weight"},
+              {value: "LOSE_WEIGHT", label: "Lose Weight"},
             ]}
           />
         </Space>
