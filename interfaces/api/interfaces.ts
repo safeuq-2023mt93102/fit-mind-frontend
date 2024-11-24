@@ -85,3 +85,23 @@ export enum SourceProvider {
   MI_FIT = "MI_FIT",
   REALME_LINK = "REALME_LINK"
 }
+
+export interface Workout {
+  day: string,
+  goals: string[]
+}
+
+export interface Goal {
+  id: string,
+  day: Date,
+  completed: boolean,
+  data: GoalData
+}
+
+export interface GoalData {
+  type: string,
+  sets: number,
+  repetitions: number,
+  duration: string,
+  exercise: string
+}
