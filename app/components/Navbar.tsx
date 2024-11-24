@@ -18,7 +18,7 @@ export default function Navbar() {
     <SessionProvider>
       <Header style={{padding: "0 20px 0 20px", position: "sticky", top: 0, zIndex: 1}}>
         <Flex style={{height: "100%"}} align={"center"}>
-          <Title level={4} style={{color: "white", margin: 0}}>Fitness Tracker</Title>
+          <Title level={4} style={{color: "white", margin: 0}}>Fit Mind</Title>
           <div style={{flexGrow: 1}}></div>
           {
             session.status === "authenticated" ?
