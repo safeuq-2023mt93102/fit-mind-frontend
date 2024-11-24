@@ -1,5 +1,5 @@
 "use client"
-import {CSSProperties, useEffect, useState} from 'react';
+import {CSSProperties, useEffect, useState, useCallback} from 'react';
 import {Button, Flex, InputNumber, Layout, Modal, Select, Table, Tag, Typography} from 'antd';
 import type {InputStatus} from 'antd/es/_util/statusUtils';
 import ExclamationCircleOutlined from '@ant-design/icons/ExclamationCircleOutlined';
@@ -337,7 +337,7 @@ function LogActivity() {
     setData(mappedData)
   }
 
-  function listActivity() {
+  const listActivity = useCallback(() => {
     setTableLoading(true);
     callGet({
       server: Servers.CORE,
@@ -346,9 +346,9 @@ function LogActivity() {
       loadData(await listActivity.json());
       setTableLoading(false);
     });
-  }
+  }, []);
 
-  useEffect(() => listActivity(), [])
+  useEffect(() => listActivity(), [listActivity]);
 
   return (
     <>

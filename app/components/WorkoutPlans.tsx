@@ -1,5 +1,5 @@
 "use client";
-import {CSSProperties, useState, useEffect} from 'react';
+import {CSSProperties, useState, useEffect, useCallback} from 'react';
 import {Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge, Radio, theme} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
 import {useRouter} from 'next/navigation';
@@ -53,13 +53,6 @@ const WorkoutPlans = () => {
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
   const [tableLoading, setTableLoading] = useState(true);
   const {data: session} = useSession();
-
-  useEffect(() => {
-    if (session) {
-      fetchWorkoutPlans();
-    }
-  }, []);
-
 
   const columns: ColumnsType<Goal> = [
     {
@@ -124,7 +117,7 @@ const WorkoutPlans = () => {
     },
   ];
 
-  const fetchWorkoutPlans = async () => {
+  const fetchWorkoutPlans = useCallback(async () => {
     callGet({
       server: Servers.CORE,
       path: "/plan/",
@@ -137,7 +130,13 @@ const WorkoutPlans = () => {
       setWorkoutPlans(plans);
       setPlansLoading(false);
     });
-  };
+  }, []);
+  
+  useEffect(() => {
+    if (session) {
+      fetchWorkoutPlans();
+    }
+  }, [session, fetchWorkoutPlans]);
 
   const fetchGoalsForWorkoutPlan = async (planId: string) => {
     callGet({
