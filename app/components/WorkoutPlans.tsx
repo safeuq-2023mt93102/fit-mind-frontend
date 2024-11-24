@@ -1,11 +1,11 @@
 "use client";
-import { CSSProperties, useState, useEffect } from "react";
-import { Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge } from "antd";
-import type { ColumnsType } from "antd/es/table";
-import { useRouter } from "next/navigation";
-import { useSession , signOut } from "next-auth/react";
-import { Workout, Goal, Servers } from "@/interfaces/api/interfaces";
-import { callGet, callPost } from "@/util/util";
+import { CSSProperties, useState, useEffect } from 'react';
+import { Button, Modal, Select, Table, Tag, Checkbox, Typography, List, Card, Space, Badge } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import { useRouter } from 'next/navigation';
+import { useSession , signOut } from 'next-auth/react';
+import { Workout, Goal, Servers } from '@/interfaces/api/interfaces';
+import { callGet, callPost } from '@/util/util';
 
 const WorkoutPlans = () => {
   const router = useRouter();
@@ -29,84 +29,84 @@ const WorkoutPlans = () => {
 
   const columns: ColumnsType<Goal> = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      align: "center",
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      align: 'center',
     },
     {
-      title: "Type",
-      dataIndex: ["data", "type"],
-      key: "type",
-      align: "center",
+      title: 'Type',
+      dataIndex: ['data', 'type'],
+      key: 'type',
+      align: 'center',
     },
     {
-      title: "Day",
-      dataIndex: "day",
-      key: "day",
-      align: "center",
+      title: 'Day',
+      dataIndex: 'day',
+      key: 'day',
+      align: 'center',
     },
     {
-      title: "Exercise",
-      dataIndex: ["data", "exercise"],
-      key: "exercise",
-      align: "center",
+      title: 'Exercise',
+      dataIndex: ['data', 'exercise'],
+      key: 'exercise',
+      align: 'center',
       render: (exercise: string) => {
         const colorMap: Record<string, string> = {
-          BARBELL_SQUATS: "purple",
-          CARDIO: "purple",
-          INCLINE_BENCH_PRESS: "purple",
-          BENCH_PRESS: "magenta",
-          BODY_WEIGHT_SQUATS: "magenta",
-          PULL_UPS: "green",
-          PUSH_UPS: "green",
-          OVERHEAD_PRESS: "blue",
-          PLANK: "blue",
-          DEADLIFTS: "red",
-          INTERVAL_TRAINING: "red",
-          BARBELL_ROWS: "cyan",
-          JUMPING_JACKS: "cyan",
-          DUMBBELL_LUNGES: "yellow",
-          MOUNTAIN_CLIMBERS: "yellow",
-          DUMBBELL_SHOULDER_PRESS: "lightcoral",
-          RUSSIAN_TWISTS: "lightcoral",
-          LEG_PRESS: "indigo",
-          BURPEES: "indigo",
-          INCLINE_DUMBBELL_BENCH_PRESS: "olive",
-          BACK_SQUATS: "olive",
-          LAT_PULL_DOWNS: "darkslategrey",
-          FRONT_SQUATS: "darkslategrey",
-          TRICEP_DIPS: "brown",
-          ROMANIAN_DEADLIFTS: "brown",
+          BARBELL_SQUATS: 'purple',
+          CARDIO: 'purple',
+          INCLINE_BENCH_PRESS: 'purple',
+          BENCH_PRESS: 'magenta',
+          BODY_WEIGHT_SQUATS: 'magenta',
+          PULL_UPS: 'green',
+          PUSH_UPS: 'green',
+          OVERHEAD_PRESS: 'blue',
+          PLANK: 'blue',
+          DEADLIFTS: 'red',
+          INTERVAL_TRAINING: 'red',
+          BARBELL_ROWS: 'cyan',
+          JUMPING_JACKS: 'cyan',
+          DUMBBELL_LUNGES: 'yellow',
+          MOUNTAIN_CLIMBERS: 'yellow',
+          DUMBBELL_SHOULDER_PRESS: 'lightcoral',
+          RUSSIAN_TWISTS: 'lightcoral',
+          LEG_PRESS: 'indigo',
+          BURPEES: 'indigo',
+          INCLINE_DUMBBELL_BENCH_PRESS: 'olive',
+          BACK_SQUATS: 'olive',
+          LAT_PULL_DOWNS: 'darkslategrey',
+          FRONT_SQUATS: 'darkslategrey',
+          TRICEP_DIPS: 'brown',
+          ROMANIAN_DEADLIFTS: 'brown',
         };
         return (
-          <Tag color={colorMap[exercise] || "gray"}>{exercise.toUpperCase()}</Tag>
+          <Tag color={colorMap[exercise] || 'gray'}>{exercise.toUpperCase()}</Tag>
         );
       },
     },
     {
-      title: "Duration (seconds)",
-      dataIndex: ["data", "duration"],
-      key: "duration_seconds",
-      align: "center",
+      title: 'Duration (seconds)',
+      dataIndex: ['data', 'duration'],
+      key: 'duration_seconds',
+      align: 'center',
     },
     {
-      title: "Sets",
-      dataIndex: ["data", "sets"],
-      key: "sets",
-      align: "center",
+      title: 'Sets',
+      dataIndex: ['data', 'sets'],
+      key: 'sets',
+      align: 'center',
     },
     {
-      title: "Repetitions",
-      dataIndex: ["data", "repetitions"],
-      key: "repetitions",
-      align: "center",
+      title: 'Repetitions',
+      dataIndex: ['data', 'repetitions'],
+      key: 'repetitions',
+      align: 'center',
     },
     {
-      title: "Completed",
-      dataIndex: "completed",
-      key: "completed",
-      align: "center",
+      title: 'Completed',
+      dataIndex: 'completed',
+      key: 'completed',
+      align: 'center',
       render: (completed: boolean, record: Goal) => (
         <Checkbox
           checked={completed}
